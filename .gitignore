@@ -19,5 +19,5 @@ $RECYCLE.BIN/
 #############
 ## Matlab Data
 #############
-.mat
-.asv
+*.mat
+*.asv
