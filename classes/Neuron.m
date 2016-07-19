@@ -124,15 +124,29 @@ classdef Neuron < handle
 			legend([h.mainLine, hBase.mainLine, hStar], {'Trial', 'Base', 'p < 0.01'});
 		end
 
-		function [spikeTimesSpliced, MoCapSpliced, timeSpliced] = splice(N)
-			centers = N.ObjTouchTimes;
-			interval = N.MC.Interval;
+		function [spikeTimesSpliced, MoCapSpliced, timeSpliced] = splice(N, alignMode, interval)
+			if nargin < 2
+				alignMode = 'touch';
+			end
+			if nargin < 3
+				interval = N.MC.Interval;
+			end
+
 			sampleRate = N.MC.SampleRate;
 			spikeTimes = N.SpikeTimes;
 
+			switch lower(alignMode)
+				case 'touch'
+					centers = N.ObjTouchTimes;
+					centersMoCap = repmat(abs(N.MC.Interval(1)), size(centers));
+				case 'release'
+					centers = N.ObjReleaseTimes;
+					centersMoCap = abs(N.MC.Interval(1)) + (N.ObjReleaseTimes - N.ObjTouchTimes);
+			end
+
 			spikeTimesSpliced = [];
 			timeSpliced = [];
-			MoCapSpliced = N.MC.splice();
+			MoCapSpliced = N.MC.splice(centersMoCap, interval);
 
 			for iTrial = 1:length(centers)
 				center 	= centers(iTrial);
@@ -144,11 +158,6 @@ classdef Neuron < handle
 				timeSpliced = horzcat(timeSpliced, left:(1/sampleRate):right);
 			end
 		end
-
-		function out = getMocapTimestamp(N)
-
-		end
 	end
-	
 end
 

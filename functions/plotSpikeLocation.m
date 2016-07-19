@@ -12,7 +12,7 @@ for iCell = 1:length(Neurons)
 		[~, iTime] = min(abs(time - spikeTimes(iSpike)));
 		timestamps = horzcat(timestamps, iTime);
 	end
-
+ 
 	covs = [];
 	covsFull = [];
 	for iCov = 1:nCov

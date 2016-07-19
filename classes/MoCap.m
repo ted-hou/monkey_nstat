@@ -24,6 +24,14 @@ classdef MoCap < handle
 		DistStickChairY
 		DistStickChairZ
 		DistStickChair
+		DistHandStickX
+		DistHandStickY
+		DistHandStickZ
+		DistHandStick
+		HandVelStickX
+		HandVelStickY
+		HandVelStickZ
+		HandSpeedStick
 	end
 	
 	methods
@@ -53,24 +61,41 @@ classdef MoCap < handle
 			MC.DistStickChairY	= MoCap_Session.MoCap_Trials(actionId).DistStickChairY;
 			MC.DistStickChairZ	= MoCap_Session.MoCap_Trials(actionId).DistStickChairZ;
 			MC.DistStickChair 	= MoCap_Session.MoCap_Trials(actionId).DistStickChair;
+			MC.DistHandStickX	= MC.HandPosX - MC.StickPosX;
+			MC.DistHandStickY	= MC.HandPosY - MC.StickPosY;
+			MC.DistHandStickZ	= MC.HandPosZ - MC.StickPosZ;
+			MC.DistHandStick	= sqrt(MC.DistHandStickX.^2 + MC.DistHandStickY.^2 + MC.DistHandStickZ.^2);
+			MC.HandVelStickX	= [diff(MC.DistHandStickX, 1, 2), diff(MC.DistHandStickX(:, end-1:end), 1, 2)];
+			MC.HandVelStickY	= [diff(MC.DistHandStickY, 1, 2), diff(MC.DistHandStickY(:, end-1:end), 1, 2)];
+			MC.HandVelStickZ	= [diff(MC.DistHandStickZ, 1, 2), diff(MC.DistHandStickZ(:, end-1:end), 1, 2)];
+			MC.HandSpeedStick	= sqrt(MC.HandVelStickX.^2 + MC.HandVelStickY.^2 + MC.HandVelStickZ.^2);
 		end
 
-		function MCSpliced = splice(MC)
-			MCSpliced.StickSize = reshape(ctranspose(MC.StickSize), 1, numel(MC.StickSize));
-			MCSpliced.StickPosX = reshape(ctranspose(MC.StickPosX), 1, numel(MC.StickPosX));
-			MCSpliced.StickPosY = reshape(ctranspose(MC.StickPosY), 1, numel(MC.StickPosY));
-			MCSpliced.StickPosZ = reshape(ctranspose(MC.StickPosZ), 1, numel(MC.StickPosZ));
-			MCSpliced.GripAperture = reshape(ctranspose(MC.GripAperture), 1, numel(MC.GripAperture));
-			MCSpliced.HandPosX = reshape(ctranspose(MC.HandPosX), 1, numel(MC.HandPosX));
-			MCSpliced.HandPosY = reshape(ctranspose(MC.HandPosY), 1, numel(MC.HandPosY));
-			MCSpliced.HandPosZ = reshape(ctranspose(MC.HandPosZ), 1, numel(MC.HandPosZ));
-			MCSpliced.HandVel = reshape(ctranspose(MC.HandVel), 1, numel(MC.HandVel));
-			MCSpliced.DistHandObj = reshape(ctranspose(MC.DistHandObj), 1, numel(MC.DistHandObj));
-			MCSpliced.DistStickChairX = reshape(ctranspose(MC.DistStickChairX), 1, numel(MC.DistStickChairX));
-			MCSpliced.DistStickChairY = reshape(ctranspose(MC.DistStickChairY), 1, numel(MC.DistStickChairY));
-			MCSpliced.DistStickChairZ = reshape(ctranspose(MC.DistStickChairZ), 1, numel(MC.DistStickChairZ));
-			MCSpliced.DistStickChair = reshape(ctranspose(MC.DistStickChair), 1, numel(MC.DistStickChair));
+		function MCSpliced = splice(MC, centers, interval)
+			MCSpliced.StickSize 		= spliceSingleCovariate(MC.StickSize, centers, interval, MC.SampleRate);
+			MCSpliced.StickPosX 		= spliceSingleCovariate(MC.StickPosX, centers, interval, MC.SampleRate);
+			MCSpliced.StickPosY 		= spliceSingleCovariate(MC.StickPosY, centers, interval, MC.SampleRate);
+			MCSpliced.StickPosZ 		= spliceSingleCovariate(MC.StickPosZ, centers, interval, MC.SampleRate);
+			MCSpliced.GripAperture 		= spliceSingleCovariate(MC.GripAperture, centers, interval, MC.SampleRate);
+			MCSpliced.HandPosX 			= spliceSingleCovariate(MC.HandPosX, centers, interval, MC.SampleRate);
+			MCSpliced.HandPosY 			= spliceSingleCovariate(MC.HandPosY, centers, interval, MC.SampleRate);
+			MCSpliced.HandPosZ 			= spliceSingleCovariate(MC.HandPosZ, centers, interval, MC.SampleRate);
+			MCSpliced.HandVel 			= spliceSingleCovariate(MC.HandVel, centers, interval, MC.SampleRate);
+			MCSpliced.DistHandObj 		= spliceSingleCovariate(MC.DistHandObj, centers, interval, MC.SampleRate);
+			MCSpliced.DistStickChairX 	= spliceSingleCovariate(MC.DistStickChairX, centers, interval, MC.SampleRate);
+			MCSpliced.DistStickChairY 	= spliceSingleCovariate(MC.DistStickChairY, centers, interval, MC.SampleRate);
+			MCSpliced.DistStickChairZ 	= spliceSingleCovariate(MC.DistStickChairZ, centers, interval, MC.SampleRate);
+			MCSpliced.DistStickChair 	= spliceSingleCovariate(MC.DistStickChair, centers, interval, MC.SampleRate);
+			MCSpliced.DistHandStickX 	= spliceSingleCovariate(MC.DistHandStickX, centers, interval, MC.SampleRate);
+			MCSpliced.DistHandStickY 	= spliceSingleCovariate(MC.DistHandStickY, centers, interval, MC.SampleRate);
+			MCSpliced.DistHandStickZ 	= spliceSingleCovariate(MC.DistHandStickZ, centers, interval, MC.SampleRate);
+			MCSpliced.DistHandStick 	= spliceSingleCovariate(MC.DistHandStick, centers, interval, MC.SampleRate);
+			MCSpliced.HandVelStickX 	= spliceSingleCovariate(MC.HandVelStickX, centers, interval, MC.SampleRate);
+			MCSpliced.HandVelStickY 	= spliceSingleCovariate(MC.HandVelStickY, centers, interval, MC.SampleRate);
+			MCSpliced.HandVelStickZ 	= spliceSingleCovariate(MC.HandVelStickZ, centers, interval, MC.SampleRate);
+			MCSpliced.HandSpeedStick 	= spliceSingleCovariate(MC.HandSpeedStick, centers, interval, MC.SampleRate);
 		end
+
 	end
 	
 end
