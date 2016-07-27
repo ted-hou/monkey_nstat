@@ -24,9 +24,16 @@ for iCell = 1:length(Neurons)
 	figure(iCell)
 	switch nCov
 		case 1
-			hist(covs(1, :));
+			edgesEnd = max([max(covs(1, :)), max(covsFull(1, :))]);
+			edgesStart = min([min(covs(1, :)), min(covsFull(1, :))]);
+			edges = edgesStart:(edgesEnd - edgesStart)/10:edgesEnd;
+			n = histcounts(covs(1, :), edges);
+			nFull = histcounts(covsFull(1, :), edges);
+			centers = (edges(1:end - 1) + edges(2:end))/2;
+			plot(centers, n./nFull, 'k');
 			xlabel(covNames{1});
-			ylabel('Spike Count');
+			ylabel('Spike "Probability"');
+			legend('Spike');
 			filename = ['spikeLocation_', covNames{1}];
 		case 2
 			scatter(covs(1, :), covs(2, :), 100, 'r.'); hold on;

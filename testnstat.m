@@ -32,7 +32,6 @@ for iCell = 1:length(Neurons)
 		Covariate(timeSpliced, MoCapSpliced.DistStickChairZ, 'DistStickChairZ', 'Time', 's'),...
 		Covariate(timeSpliced, MoCapSpliced.DistStickChair, 'DistStickChair', 'Time', 's')...
 	});
-	Neurons(iCel
 
 	% GLM Fit
 	[Neurons(iCell).GLMFit.lambda, Neurons(iCell).GLMFit.b, Neurons(iCell).GLMFit.dev, Neurons(iCell).GLMFit.stats, Neurons(iCell).GLMFit.AIC, Neurons(iCell).GLMFit.BIC, Neurons(iCell).GLMFit.distribution] = Analysis.GLMFit(Neurons(iCell).tObj, 1, 1);
