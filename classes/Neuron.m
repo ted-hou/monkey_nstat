@@ -124,12 +124,15 @@ classdef Neuron < handle
 			legend([h.mainLine, hBase.mainLine, hStar], {'Trial', 'Base', 'p < 0.01'});
 		end
 
-		function [spikeTimesSpliced, MoCapSpliced, timeSpliced] = splice(N, alignMode, interval)
+		function [spikeTimesSpliced, MoCapSpliced, timeSpliced] = splice(N, alignMode, interval, delay)
 			if nargin < 2
 				alignMode = 'touch';
 			end
 			if nargin < 3
 				interval = N.MC.Interval;
+			end
+			if nargin < 4
+				delay = 0;
 			end
 
 			sampleRate = N.MC.SampleRate;
@@ -146,7 +149,7 @@ classdef Neuron < handle
 
 			spikeTimesSpliced = [];
 			timeSpliced = [];
-			MoCapSpliced = N.MC.splice(centersMoCap, interval);
+			MoCapSpliced = N.MC.splice(centersMoCap - delay, interval);
 
 			for iTrial = 1:length(centers)
 				center 	= centers(iTrial);
