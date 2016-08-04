@@ -1,4 +1,4 @@
-function testnstat_univ(NeuronsDB, MoCap_Sessions, testmode, covDelay, percentile)
+function testnstat_univ(NeuronsDB, MoCap_Sessions, testmode, covDelay, percentile, plotType)
 	if nargin < 3
 		testmode = 'Touch'; % Can also be 'Release'
 	end
@@ -7,6 +7,9 @@ function testnstat_univ(NeuronsDB, MoCap_Sessions, testmode, covDelay, percentil
 	end
 	if nargin < 5
 		percentile = 0; % 0~100, This percentile (neurons with lowest firing rates are discarded) 
+	end
+	if nargin < 6
+		plotType = 'Full'; % Can be 'Full', 'KS'
 	end
 
 	numCells = 40;
@@ -138,15 +141,26 @@ function testnstat_univ(NeuronsDB, MoCap_Sessions, testmode, covDelay, percentil
 
 	% Analyze the data
 	disp('Performing pp-GLM fit...')
-	ResultsObj = Analysis.RunAnalysisForAllNeurons(TrialObj, ConfigCollObj, 1);
-
-
+	switch plotType
+		case 'Full'
+			Analysis.RunAnalysisForAllNeurons(TrialObj, ConfigCollObj, 1);
+		case 'KS'
+			ResultsObj = Analysis.RunAnalysisForAllNeurons(TrialObj, ConfigCollObj, 0);
+			for iCell = 1:length(ResultsObj);
+				figure(iCell)
+				Analysis.KSPlot(ResultsObj{iCell});			
+			end
+	end
+	
 	disp('Saving figures to disk...')
 	iFig = 1;
 	iCells = 1:numCells; iCells(skippedCells) = [];
 
 	for iCell = iCells
 		figure(iFig);
+		if strcmp(plotType, 'KS')
+			title(['KS Plot (', testmode, ', ', num2str(round(covDelay*1000)),'ms)']);
+		end
 		saveas(gcf,['nStat_',num2str(iCell),'_',testmode,'_',num2str(round(covDelay*1000)),'ms','.jpg']);
 		iFig = iFig + 1;
 	end

@@ -107,7 +107,7 @@ classdef Neuron < handle
 			t = interval(1):1/sampleRate:interval(2);
 
 			figure('MenuBar', 'none', 'ToolBar', 'none', 'units', 'normalized', 'outerposition', [0 0.1 1 0.8]);
-			subplot(3,1,1)
+			subplot(2,1,1)
 			h = shadedErrorBar(t, mean(freqTouch), std(freqTouch), 'r', 1); hold on;
 			hBase = shadedErrorBar(t, mean(freqBase), std(freqBase),'k', 1); 
 			hStar = scatter(t(find(hTouch)), mean(freqTouch(:, find(hTouch))), 1, '*'); hold off;
@@ -115,7 +115,7 @@ classdef Neuron < handle
 			title(['Electrode ', num2str(N.Electrode), ' Channel ', num2str(N.Channel),' Unit', num2str(N.Unit),' (Touch)']);
 			legend([h.mainLine, hBase.mainLine, hStar], {'Trial', 'Base', 'p < 0.01'});
 
-			subplot(3,1,2)
+			subplot(2,1,2)
 			h = shadedErrorBar(t, mean(freqRelease), std(freqRelease), 'r', 1); hold on;
 			hBase = shadedErrorBar(t, mean(freqBase), std(freqBase),'k', 1); 
 			hStar = scatter(t(find(hRelease)), mean(freqRelease(:, find(hRelease))), 1, '*'); hold off;
@@ -160,6 +160,24 @@ classdef Neuron < handle
 				spikeTimesSpliced = horzcat(spikeTimesSpliced, spikeTimesThisTrial); 
 				timeSpliced = horzcat(timeSpliced, left:(1/sampleRate):right);
 			end
+		end
+
+		function spikeTrain = getSpikeTrain(N, alignMode, interval, delay)
+			if nargin < 2
+				alignMode = 'touch';
+			end
+			if nargin < 3
+				interval = N.MC.Interval;
+			end
+			if nargin < 4
+				delay = 0;
+			end
+
+			[spikeTimesSpliced, MoCapSpliced, timeSpliced] = N.splice(alignMode, interval, delay);
+
+			sampleRate = N.MC.SampleRate;
+
+			spikeTrain = zeros(size(time));
 		end
 	end
 end
